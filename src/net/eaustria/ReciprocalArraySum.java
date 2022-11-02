@@ -11,6 +11,7 @@ package net.eaustria;
  */
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
@@ -101,6 +102,7 @@ public final class ReciprocalArraySum {
             // array smaller than threshold: compute sequentially else, fork 
             // 2 new threads
             invokeAll(left, right);
+
             return left.join() + right.join();
         }
     }

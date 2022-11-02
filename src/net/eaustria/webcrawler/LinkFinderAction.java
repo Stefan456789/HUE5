@@ -11,8 +11,11 @@ import java.util.List;
 import java.util.concurrent.RecursiveAction;
 import org.htmlparser.Parser;
 import org.htmlparser.filters.NodeClassFilter;
+import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.NodeList;
+import org.htmlparser.util.ParserException;
+import org.htmlparser.visitors.HtmlPage;
 
 /**
  *
@@ -31,19 +34,46 @@ public class LinkFinderAction extends RecursiveAction {
     private static final long t0 = System.nanoTime();
 
     public LinkFinderAction(String url, ILinkHandler cr) {
-        // ToDo: Implement Constructor
+        this.url = url;
+        this.cr = cr;
     }
 
     @Override
     public void compute() {
         // ToDo:
         // 1. if crawler has not visited url yet:
-        // 2. Create new list of recursiveActions
-        // 3. Parse url
-        // 4. extract all links from url
-        // 5. add new Action for each sublink
-        // 6. if size of crawler exceeds 500 -> print elapsed time for statistics
-        // -> Do not forget to call ìnvokeAll on the actions!      
+        if (!cr.visited(url)){
+            // 2. Create new list of recursiveActions
+            List<LinkFinderAction> ac = new ArrayList<>();
+            // 3. Parse url
+            try {
+                System.out.println("Parsing: " + url);
+                Parser p = new Parser(url);
+
+                // 4. extract all links from url
+                NodeList nodes = p.extractAllNodesThatMatch(new TagNameFilter("a"));
+
+                var it = nodes.elements();
+                while (it.hasMoreNodes()){
+                    // 5. add new Action for each sublink
+                    String link = ((LinkTag) it.nextNode()).getLink();
+                    ac.add(new LinkFinderAction(link, cr));
+                }
+
+            } catch (ParserException e) {
+                e.printStackTrace();
+            }
+
+            cr.addVisited(url);
+            // 6. if size of crawler exceeds 500 -> print elapsed time for statistics
+            if (cr.size() > 500){
+                System.out.println(t0);
+                System.out.println(cr.size());
+            }
+
+            // -> Do not forget to call ìnvokeAll on the actions!
+            invokeAll(ac);
+        }
     }
 }
 

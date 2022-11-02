@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="htmlparser" type="repository">
+    <properties maven-id="org.htmlparser:htmlparser:2.1" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/htmlparser/htmlparser/2.1/htmlparser-2.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/htmlparser/htmllexer/2.1/htmllexer-2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

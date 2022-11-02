@@ -24,11 +24,11 @@ public class WebCrawler7 implements ILinkHandler {
 
     public WebCrawler7(String startingURL, int maxThreads) {
         this.url = startingURL;
-        // ToDo: Initialize "mainPool"        
+        mainPool = new ForkJoinPool(maxThreads);
     }
 
     private void startCrawling() {
-        // ToDo: Invoke LinkFinderAction on threadpool        
+        mainPool.invoke(new LinkFinderAction(url, this));
     }
 
     @Override
@@ -50,7 +50,9 @@ public class WebCrawler7 implements ILinkHandler {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
-        new WebCrawler7("http://www.orf.at", 64).startCrawling();
+        WebCrawler7 web = new WebCrawler7("http://www.orf.at", 64);
+        web.startCrawling();
+        System.out.println(web.size());
     }
 
     // Just override - we do not need this methode when using forkJoinPool

@@ -5,6 +5,15 @@
  */
 package net.eaustria.webcrawler;
 
+import org.htmlparser.Parser;
+import org.htmlparser.filters.TagNameFilter;
+import org.htmlparser.tags.LinkTag;
+import org.htmlparser.util.NodeList;
+import org.htmlparser.util.ParserException;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author bmayr
@@ -31,17 +40,46 @@ public class LinkFinder implements Runnable {
     }
 
     private void getSimpleLinks(String url) {
-        // ToDo: Implement
-        // 1. if url not already visited, visit url with linkHandler
-        if (linkHandler.visited(url)){
-            linkHandler.addVisited(url);
-        }
-        // 2. get url and Parse Website
+        // 1. if crawler has not visited url yet:
+        if (!linkHandler.visited(url)) {
+            // 2. Create new list of recursiveActions
+            List<String> urls = new ArrayList<>();
+            // 3. Parse url
+            try {
+                System.out.println("Parsing: " + url);
+                Parser p = new Parser(url);
 
-        // 3. extract all URLs and add url to list of urls which should be visited
-        //    only if link is not empty and url has not been visited before
-        // 4. If size of link handler equals 500 -> print time elapsed for statistics               
-        
+                // 4. extract all links from url
+                NodeList nodes = p.extractAllNodesThatMatch(new TagNameFilter("a"));
+
+                var it = nodes.elements();
+                while (it.hasMoreNodes()) {
+                    // 5. add new Action for each sublink
+                    String link = ((LinkTag) it.nextNode()).getLink();
+                    if (!linkHandler.visited(link))
+                        urls.add(link);
+                }
+
+            } catch (ParserException e) {
+                e.printStackTrace();
+            }
+
+            linkHandler.addVisited(url);
+            // 6. if size of crawler exceeds 500 -> print elapsed time for statistics
+            if (linkHandler.size() > 500) {
+                System.out.println(t0);
+                System.out.println(linkHandler.size());
+            }
+
+            urls.forEach(x -> {
+                try {
+                    linkHandler.queueLink(x);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+        }
     }
 }
 

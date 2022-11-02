@@ -7,6 +7,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="HTMLParser-2.0-SNAPSHOT-bin" level="project" />
+    <orderEntry type="library" name="htmlparser" level="project" />
   </component>
 </module>
